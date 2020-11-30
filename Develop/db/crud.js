@@ -43,7 +43,7 @@ class Crud {
         // Function flow: call the note object -> update the note object except the notes with a specific id
         return this.parseNote() // call the note
                 .then((notes) => notes.filter((note) => note.id !== id)) // update the notes without a note with a specific id.
-                .then((filteredNotes) => this.write(filteredNotes));
+                .then((filteredNotes) => this.writeNote(filteredNotes));
     }
 };
 
