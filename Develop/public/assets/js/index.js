@@ -17,11 +17,19 @@ const getNotes = () => {
 
 // A function for saving a note to the db
 const saveNote = (note) => {
-  return $.ajax({
-    url: "/api/notes",
-    data: note,
-    method: "POST",
-  });
+  return new Promise((resolve, reject) => {
+    try{
+      resolve(
+        $.ajax({
+          url: "/api/notes",
+          data: note,
+          method: "POST"
+        }
+      )
+    )} catch(e){
+      console.error(e)
+    }
+  }) 
 };
 
 // A function for deleting a note from the db
@@ -56,9 +64,12 @@ const handleNoteSave = function () {
     text: $noteText.val(),
   };
 
-  saveNote(newNote).then(() => {
-    getAndRenderNotes();
-    renderActiveNote();
+  saveNote(newNote).then((res) => {
+    console.log(res)
+    const asyncAddNote = create$li(res.text).data(res)
+    $noteList.append(asyncAddNote)
+    // getAndRenderNotes();
+    // renderActiveNote();
   });
 };
 
@@ -111,20 +122,7 @@ const renderNoteList = (notes) => {
 
   // Returns jquery object for li with given text and delete button
   // unless withDeleteButton argument is provided as false
-  const create$li = (text, withDeleteButton = true) => {
-    const $li = $("<li class='list-group-item'>");
-    const $span = $("<span>").text(text);
-    $li.append($span);
-
-    if (withDeleteButton) {
-      const $delBtn = $(
-        "<i class='fas fa-trash-alt float-right text-danger delete-note'>"
-      );
-      $li.append($delBtn);
-    }
-    return $li;
-  };
-
+  
   if (notes.length === 0) {
     noteListItems.push(create$li("No saved Notes", false));
   }
@@ -135,6 +133,20 @@ const renderNoteList = (notes) => {
   });
 
   $noteList.append(noteListItems);
+};
+
+const create$li = (text, withDeleteButton = true) => {
+  const $li = $("<li class='list-group-item'>");
+  const $span = $("<span>").text(text);
+  $li.append($span);
+
+  if (withDeleteButton) {
+    const $delBtn = $(
+      "<i class='fas fa-trash-alt float-right text-danger delete-note'>"
+    );
+    $li.append($delBtn);
+  }
+  return $li;
 };
 
 // Gets notes from the db and renders them to the sidebar

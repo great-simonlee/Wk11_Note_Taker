@@ -12,7 +12,7 @@ class Crud {
     };
 
     writeNote(note) {
-        return writeNote(__dirname + "/db.json", JSON.stringify(note))};
+        return writeNote(__dirname + "/db.json", note)};
 
     parseNote() {
         return this.readNote().then((data) => {
